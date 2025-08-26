@@ -62,4 +62,3 @@ to install the dependencies used:
 
 	pip install fido2 requests
 
-TODO: check dependencies, add requirements.txt?
