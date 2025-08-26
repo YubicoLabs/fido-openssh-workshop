@@ -83,13 +83,17 @@ The columns represent an index, your credential's display name, user ID, type an
 
 - Verify your key is listed as an authentication key:
 
+```
 	curl https://github.com/<username>.keys
+```
 
 where `<username>` is your GitHub username.
 
 - Test SSH access to GitHub:
 
-	ssh -T git@github.com
+```
+	ssh -T git@github.com -i <identity_file>
+```
 
 # Generating key files for resident keys
 
@@ -109,8 +113,10 @@ Note that all files have been regenerated, but to prevent files from overwriting
 
 Clean up your docker container and image:
 
+```
 	docker stop ssh_demo
 	docker rmi ssh-server
+```
 
 Remove the server key from your `known_hosts` file:
 
@@ -121,3 +127,6 @@ You can also delete the key files:
 	rm id_ecdsa{,.pub}
 
 If you also want to delete the resident keys from your security key, use 
+
+	fido2-token -D -i <credential_id_hash> <device>
+
