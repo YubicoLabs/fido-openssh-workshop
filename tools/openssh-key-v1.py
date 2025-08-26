@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import sys
 import base64
 import yaml
@@ -46,11 +48,18 @@ flagnames = [
   
 skfile = sys.argv[1]
 
-with open(skfile, "r") as f:
-  lines = f.read().split('\n')
+with open(skfile, "rb") as f:
+  contents = f.read()
 
-assert(lines[0] == '-----BEGIN OPENSSH PRIVATE KEY-----')
-assert(lines[-2] == '-----END OPENSSH PRIVATE KEY-----')
+if not contents.isascii():
+    print(f"expecting OpenSSH private key file '{ skfile }'", file=sys.stderr)
+    sys.exit(1)
+
+lines = contents.decode('utf-8').split('\n')
+if(lines[0] != '-----BEGIN OPENSSH PRIVATE KEY-----'):
+    print(f"expecting OpenSSH private key file '{ skfile }'", file=sys.stderr)
+    sys.exit(1)
+
 b64 = "".join(lines[1:-2])
 sshkey=base64.b64decode(b64)
 
