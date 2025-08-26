@@ -6,7 +6,9 @@
 
 - Check options to see if a PIN is set (`clientPin`) or not (`noclientPin`)
 
-- Also check what the minimum PIN length is
+- Also check what the minimum PIN length is.
+
+> Note that minimum PIN length is only reported on FIDO 2.1+ security keys with libfido2 version 1.12 or later.
 
 - If a PIN has not been set, set a PIN using `fido2-token -S`
 Note that a PIN does not have to be numeric.
@@ -25,13 +27,13 @@ Use type `ecdsa-sk` (`-t`) and store the key files locally using the name `./id_
 - Build a docker image using the Dockerfile in this directory:
 
 ```
-	docker build --build-arg user=ubuntu -t ssh-server .
+docker build --build-arg user=ubuntu -t ssh-server .
 ```
 
 - Run the docker container:
 
 ```
-	docker run --rm -d -p 22:22 --name ssh_demo ssh-server
+docker run --rm -d -p 22:22 --name ssh_demo ssh-server
 ```
 
 If you have a local sshd running, shut it down or use a different port.
@@ -39,7 +41,7 @@ If you have a local sshd running, shut it down or use a different port.
 - Sign in to the SSH server using your hardware backed key:
 
 ```
-	ssh -i ./id_ecdsa_sk ubuntu@localhost
+ssh -i ./id_ecdsa_sk ubuntu@localhost
 ```
 
 # User Verification
@@ -48,9 +50,9 @@ If you have a local sshd running, shut it down or use a different port.
 Re-generate your keys with option `-O verify-required` and rebuild your server:
 
 ```
-	docker stop ssh_demo
-	docker build --build-arg user=ubuntu -t ssh-server .
-	docker run --rm -d -p 22:22 --name ssh_demo ssh-server
+docker stop ssh_demo
+docker build --build-arg user=ubuntu -t ssh-server .
+docker run --rm -d -p 22:22 --name ssh_demo ssh-server
 ```
 
 - Sign in again and note that you are now prompted for a PIN
@@ -94,7 +96,7 @@ The columns represent an index, your credential's display name, user ID, type an
 - Verify your key is listed as an authentication key:
 
 ```
-	curl https://github.com/<username>.keys
+curl https://github.com/<username>.keys
 ```
 
 where `<username>` is your GitHub username.
@@ -102,7 +104,7 @@ where `<username>` is your GitHub username.
 - Test SSH access to GitHub:
 
 ```
-	ssh -T git@github.com -i <identity_file>
+ssh -T git@github.com -i <identity_file>
 ```
 
 # Generating key files for resident keys
@@ -124,25 +126,25 @@ Note that all files have been regenerated, but to prevent files from overwriting
 Clean up your docker container and image:
 
 ```
-	docker stop ssh_demo
-	docker rmi ssh-server
+docker stop ssh_demo
+docker rmi ssh-server
 ```
 
 Remove the server key from your `known_hosts` file:
 
 ```
-	ssh-keygen -R 'localhost'
+ssh-keygen -R 'localhost'
 ```
 
 You can also delete the key files:
 
 ```
-	rm ./id_ecdsa_sk{,.pub}
+rm ./id_ecdsa_sk{,.pub}
 ```
 
 If you also want to delete the resident keys from your security key, use 
 
 ```
-	fido2-token -D -i <credential_id_hash> <device>
+fido2-token -D -i <credential_id_hash> <device>
 ```
 

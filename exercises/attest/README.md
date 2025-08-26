@@ -16,19 +16,23 @@ but is specific to a specific vendor and model (typically up to its firmware ver
 
 - Lookup the metadata for your security key, based on that AAGUID, using the FIDO MDS explorer:
 
-	https://opotonniee.github.io/fido-mds-explorer/
+    https://opotonniee.github.io/fido-mds-explorer/
 
 # Generate key and attestation
 
 - Generate a random challenge:
 
-	openssl rand 128 > challenge.bin
+```
+openssl rand 128 > challenge.bin
+```
 
 The challenge must be saved in order to verify the attestation later.
 
 - Generate a new key pair with attestation using the challenge:
 
-	ssh-keygen -t ecdsa-sk -f ./id -N "" -O challenge=challenge.bin -O write-attestation=attestation.bin
+```
+ssh-keygen -t ecdsa-sk -f ./id -N "" -O challenge=challenge.bin -O write-attestation=attestation.bin
+```
 
 The attestation is a signed statement generated on the security key using an attestation key.
 We need FIDO metadata to verify the attestation.
@@ -42,7 +46,9 @@ and validating that certificate against FIDO's Metadata Service.
 
 Let's start with obtaining a fresh copy of FIDO metadata.
 
-	curl -Ls https://mds.fidoalliance.org/ --output mds.jwt
+```
+curl -Ls https://mds.fidoalliance.org/ --output mds.jwt
+```
 
 This should generate a file `mds.jwt` with FIDO metadata.
 
@@ -50,18 +56,26 @@ We are using a python tool to verify the attestation agains FIDO metadata.
 
 - To not interfere with how Python is installed on your system, create a Python virtual environment.
 
-	python3 -m venv venv
+```
+python3 -m venv venv
+```
 
 - Now activate the virtual environment:
 
-	source venv/bin/activate
+```
+source venv/bin/activate
+```
 
 - Install dependencies:
 
-	pip install requests fido2
+```
+pip install requests fido2
+```
 
 Note: before running the Python script, inspect its contents to get an idea of what it is doing.
 
 - Now use the python script in this directory to verify the attestation:
 
-	./ssh-sk-attest.py --key id.pub --attestation attestation.bin --challenge challenge.bin --mds mds.jwt
+```
+./ssh-sk-attest.py --key id.pub --attestation attestation.bin --challenge challenge.bin --mds mds.jwt
+```
