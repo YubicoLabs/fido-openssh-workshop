@@ -26,7 +26,17 @@ Participants should bring a laptop (Linux or macOS is recommended) and a securit
 
 ## Workshop preparation
 
-To save time downloading tools during the workshop, participants should download and install the following in advance:
+For the exercises, you should of course have the OpenSSH client installed. Version 8.2 is a minimum, but 8.9 or later is preferred.
+Linux distributions will have OpenSSH installed by default. 
+MacOS also has a version pre-installed, but it is lacking a required FIDO SecurityKeyProvider. Instead install from [brew](https://brew.sh/).
+
+Other software that is probably already installed: 
+
+- Git version 2.34 or newer. Check with git --version
+- Python version 3.10 or newer. Check with python3 -V
+
+
+To save time downloading tools during the workshop, participants should have the following downloaded/installed in advance:
 
 - Docker Desktop (or something similar, eg podman) to run Docker containers.
 
@@ -45,13 +55,6 @@ To save time downloading tools during the workshop, participants should download
 ```sh
 	git clone https://github.com/YubicoLabs/fido-openssh-workshop.git
 ```
-
-- Python 3, which is probably already installed on your system. To make sure, run
-```sh
-	python3 -V
-```
-
-As a minimum Python, version 3.10 is required.
 
 ### Python virtual environment
 
