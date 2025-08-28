@@ -30,34 +30,37 @@ To save time downloading tools during the workshop, participants should download
 
 - Docker Desktop (or something similar, eg podman) to run Docker containers.
 
-	https://www.docker.com/products/docker-desktop/
+	[https://www.docker.com/products/docker-desktop/](https://www.docker.com/products/docker-desktop/)
 
 - A recent Ubuntu image. We recommend pulling the latest LTS version (24.04 when this README was last updated)
-
+```sh
 	docker pull ubuntu:latest
+```
 
-- libfido2, which includes some command-line tools to interact with security keys. See the following web page for installation instructions:
+- `libfido2`, which includes some command-line tools to interact with security keys. See the following web page for installation instructions:
 
-	https://developers.yubico.com/libfido2/
+	[https://developers.yubico.com/libfido2/](https://developers.yubico.com/libfido2/)
 
 - This repository, which contains some Python tools that can be useful:
-
+```sh
 	git clone https://github.com/YubicoLabs/fido-openssh-workshop.git
-
+```
 
 - Python 3, which is probably already installed on your system. To make sure, run
-
+```sh
 	python3 -V
+```
 
 As a minimum Python, version 3.10 is required.
 
 ### Python virtual environment
 
 To run the python scripts in this repository, it is recommended to use a virtual environment:
-
+```sh
 	python3 -m venv venv
 	source venv/bin/activate
-
+```
 to install the dependencies used:
-
+```sh
 	pip install fido2 requests PyYAML
+```
