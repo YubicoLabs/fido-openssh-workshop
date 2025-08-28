@@ -29,7 +29,7 @@ export GIT_CONFIG_SYSTEM=
 git config -l
 ```
 
-Initialize a new repository:
+- Initialize a new repository:
 
 ```
 git -c init.defaultBranch=main init
@@ -81,7 +81,7 @@ git config user.signingkey ./id_ed25519_sk_user
 - Stage a new commit:
 
 ```
-echo "commits should be signed" >> README 
+echo "commits should be signed" >> README
 git add README
 ```
 
@@ -99,6 +99,12 @@ git log --show-signature
 
 Note that the commit has a signature now.
 Also note that the signatures are not trusted.
+
+Optionally, show the signature with command
+
+```
+git cat-file HEAD -p
+```
 
 - to verify signatures, we need to specify the public keys we trust:
 
@@ -139,15 +145,20 @@ git remote add origin ubuntu@localhost:scratch.git
 git remote -v
 ```
 
-- Create an ssh configi file with the following contents:
+- Create an `sshconfig` file with the following contents:
 
 ```
 Host localhost
-    IdentityFile ./id_ecdsa
+    IdentityFile ./id_ecdsa_sk_uv
     StrictHostKeyChecking accept-new
 ```
 
 - Use the Dockerfile in this directory to create an SSH server with a bare git repository.
+
+```
+docker build --build-arg user=ubuntu -t ssh-server .
+docker run --rm -d -p 22:22 --name ssh_demo ssh-server
+```
 
 - Configure the SSH command git uses to access the git server:
 
@@ -167,11 +178,13 @@ Git signatures are also recognized by GitHub and GitLab.
 
 For instance, on GitHib, you can register your signing keys here:
 
+```
 https://github.com/settings/keys
+```
 
 Note however that
 
-1. all GitHub keys are implicitely trusted ("Verified"!
+1. all GitHub keys are implicitly trusted ("Verified")
 2. Signing with hardware-backed keys doesn't make sense if you authenticate using passwords. Replace passwords with passkeys (https://github.com/settings/security)!
 
 
@@ -184,9 +197,15 @@ Note however that
 make realclean
 ```
 
-clean up
+TODO: add Makefile or state commands explicitly
 
 ```
-rm README allowed_signers id_ed25519_sk_user id_ed25519_sk_user.pub
+docker stop ssh_demo
+docker rmi ssh-server
+
+ssh-keygen -R 'localhost'
+
+rm README allowed_signers id_ed25519_sk_user id_ed25519_sk_user.pub id_ecdsa_sk_uv id_ecdsa_sk_uv.pub sshconfig
+
 rm -rf dotgit
 ```
