@@ -31,6 +31,13 @@
 
 Note that the passphrase doesn't make sense here. The private key is stored on the security key, not in the private key file, so there is nothing that needs encryption.
 
+- Using your Python virtual environment, run the script in the `tools` directory to inspect the private key file:
+
+```
+  ../../tools/openssh-key-v1.py ./id_ecdsa_sk
+```
+Notice that it only contains a handle to the private key on your security key (it's credential ID), not the private key itself!
+
 - Build a docker image using the Dockerfile in this directory:
 
 ```
