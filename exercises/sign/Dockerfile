@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM ubuntu:latest
 RUN apt-get update && apt-get install -y openssh-server git
 RUN mkdir /var/run/sshd
 EXPOSE 22
