@@ -4,11 +4,11 @@ In this exercise we are using SSH certificates to sign in to a server.
 Using resident keys, we can always regenerate SSH key files.
 Using largeBlobs, we can also store the certificate.
 
-- check if largeBlobs are supported on your security keys: (option `largeBlobs`)
+- use command `fido2-token -I <device>` to check if largeBlobs are supported on your security keys: (`options: largeBlobs`)
 
 If your security key doesn't, ask your instructor for one that does.
 
-- generate the CA key pair (id_userca, id_userca.pub):
+- generate the CA key pair (`id_userca`, `id_userca.pub`):
 
 ```
 ssh-keygen -t ecdsa -f id_userca -N '' -C ca@example.org
@@ -16,13 +16,13 @@ ssh-keygen -t ecdsa -f id_userca -N '' -C ca@example.org
 
 Note that we store the CA private key in a file, but we might just as well have generated it on a security key.
 
-- Generate a resident SSH key on a security key (id_ecdsa, id_ecdsa.pub):
+- Generate a resident SSH key on a security key (`id_ecdsa`, `id_ecdsa.pub`):
 
 ```
 ssh-keygen -t ecdsa-sk -f ./id_ecdsa -N '' -O resident -O verify-required -O application=ssh:demo -O user=ubuntu -C ubuntu@example.org
 ```
 
-- Now have the CA sign your pubkey (id_ecdsa.pub) into a SSH certificate, using CA key id_userca:
+- Now have the CA sign your pubkey (`id_ecdsa.pub`) into a SSH certificate (`id_ecdsa-cert.pub`), using CA key (`id_userca`):
 
 ```
 ssh-keygen -s ./id_userca -I ubuntu@example.org -V +52w -n ubuntu,ubuntu@example.org id_ecdsa.pub
@@ -31,10 +31,10 @@ ssh-keygen -s ./id_userca -I ubuntu@example.org -V +52w -n ubuntu,ubuntu@example
 - Store the certificate in a largeBLob on your security key
 
 ```
-fido2-token -S -b -n ssh:demo id_ecdsa-cert.pub /dev/hidrawN
+fido2-token -S -b -n ssh:demo id_ecdsa-cert.pub <device>
 ```
 
-(Change the device filename are reported on your system)
+(Change `<device>` filename reported on your system `fido2-token -L`)
 
 - View the generated certificate
 
@@ -45,13 +45,13 @@ ssh-keygen -f id_ecdsa-cert.pub -L
 - list the credential on your security key:
 
 ```
-fido2-token -L -k ssh:demo /dev/hidrawN
+fido2-token -L -k ssh:demo <device>
 ```
 
 - list the largeBlobs on your security key
 
 ```
-fido2-token -L -b /dev/hidrawN
+fido2-token -L -b <device>
 ```
 
 - Build the Docker image
@@ -99,7 +99,7 @@ ssh-keygen -K -N ''
 - Also extract the SSH certificate from your security key by retrieving the large blob:
 
 ```
-fido2-token -G -b -n ssh:demo id_ecdsa_sk_rk_demo_ubuntu-cert.pub /dev/hidrawN
+fido2-token -G -b -n ssh:demo id_ecdsa_sk_rk_demo_ubuntu-cert.pub <device>
 ```
 
 - You should now have restored both SSH key files and your certificate:
@@ -127,11 +127,11 @@ ssh-keygen -R 'localhost'
 Optionally, also delete the largeblob from your security key:
 
 ```
-fido2-token -D -b -n ssh:demo /dev/hidrawN
+fido2-token -D -b -n ssh:demo <device>
 ```
 
 Finally, delete the resident credential:
 
 ```
-fido2-token -D -i $(fido2-token -Lk ssh:demo /dev/hidrawN | cut -d' ' -f2) /dev/hidrawN
+fido2-token -D -i $(fido2-token -Lk ssh:demo <device> | cut -d' ' -f2) <device>
 ```
