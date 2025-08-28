@@ -1,8 +1,8 @@
-# fido-openssh-workshop
-Workshop on using FIDO Security Keys with OpenSSH
+# FIDO OpenSSH Workshop
+A Workshop on using FIDO Security Keys with OpenSSH.
 
 OpenSSH has built-in support for FIDO security keys since version 8.2 (released in 2020).
-This means you can protect your SSH private keys using security keys,
+This means you can protect your SSH private keys using USB security keys,
 similar to how this can be done with OpenPGP smart cards and cryptographic tokens that support PKCS#11.
 Although such devices all allow you to protect your private keys using cryptographic hardware,
 the benefits of using FIDO security keys include:
@@ -18,7 +18,7 @@ the benefits of using FIDO security keys include:
 - FIDO features device attestation, which lets you cryptographically prove you are using a specific security key make and model.
 
 In this workshop, we will give a short introduction to FIDO security keys,
-and provide several demos of the use of security keys with OpenSSH,
+and provide several exercises for the use of security keys with OpenSSH,
 such as signing arbitrary data, authenticating to remote systems, and using key attestation.
 
 The workshop consists of a number of exercises that participants can perform on their system.
@@ -26,9 +26,9 @@ Participants should bring a laptop (Linux or macOS is recommended) and a securit
 
 ## Workshop preparation
 
-To save time downloading tools during the workshop, make sure you download and install the following:
+To save time downloading tools during the workshop, participants should download and install the following in advance:
 
-- Docker Desktop (or something similar) to run Docker containers.
+- Docker Desktop (or something similar, eg podman) to run Docker containers.
 
 	https://www.docker.com/products/docker-desktop/
 
@@ -49,7 +49,7 @@ To save time downloading tools during the workshop, make sure you download and i
 
 	python3 -V
 
-TODO: minimum Python version 3.9?
+As a minimum Python, version 3.10 is required.
 
 ### Python virtual environment
 
@@ -60,4 +60,4 @@ To run the python scripts in this repository, it is recommended to use a virtual
 
 to install the dependencies used:
 
-	pip install fido2 requests
+	pip install fido2 requests PyYAML
