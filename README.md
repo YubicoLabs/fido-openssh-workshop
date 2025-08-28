@@ -21,7 +21,7 @@ In this workshop, we will give a short introduction to FIDO security keys,
 and provide several demos of the use of security keys with OpenSSH,
 such as signing arbitrary data, authenticating to remote systems, and using key attestation.
 
-The workshop consists of a number of exercises that participants can persorm on their system.
+The workshop consists of a number of exercises that participants can perform on their system.
 Participants should bring a laptop (Linux or macOS is recommended) and a security key (any vendor will do).
 
 ## Workshop preparation
@@ -61,4 +61,3 @@ To run the python scripts in this repository, it is recommended to use a virtual
 to install the dependencies used:
 
 	pip install fido2 requests
-
