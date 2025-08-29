@@ -138,3 +138,14 @@ echo hello | ssh-keygen -Y sign -f id_ecdsa_sk.pub -n test
 
 A window should appear on your client system asking for the PIN, and if the PIN verifies, 
 the message is signed on the server using the key residing on the security key connected to your client system.
+
+# Clean up
+
+Don't forget to clean up:
+
+```
+docker stop ssh_demo
+docker rmi ssh-server
+ssh-keygen -R 'localhost'
+rm id_ecdsa_sk{,.pub} ./id_ecdsa_sk_uv{,.pub}
+```
