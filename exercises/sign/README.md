@@ -21,8 +21,8 @@ The `test` namespace is used to distinguish between different signing domains.
 - to verify signatures, we first need to specify the public keys we trust in a separate file:
 
 ```
-echo -n 'johndoe@example.org ' > allowed_signers
-cat ./id_ecdsa_sk_sign.pub >> allowed_signers
+echo -n 'johndoe@example.org ' > ./allowed_signers
+cat ./id_ecdsa_sk_sign.pub >> ./allowed_signers
 ```
 
 So the `allowed_signers` file contains a list of SSH user IDs and their public keys.
@@ -30,7 +30,7 @@ So the `allowed_signers` file contains a list of SSH user IDs and their public k
 To verify the signature, refer to the signer identity and the list of trusted public keys:
 
 ```
-ssh-keygen -Y verify -f allowed_signers -I johndoe@example.org -n test -s message.sig  < message
+ssh-keygen -Y verify -f ./allowed_signers -I johndoe@example.org -n test -s message.sig  < message
 ```
 
 # Git signing
