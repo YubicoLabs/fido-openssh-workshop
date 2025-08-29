@@ -1,24 +1,50 @@
 # Signing
 
+In this exercise we will use hardware-backed SSH keys to generate digital signatures.
+
 Generate a new signing key:
 
 ```
-ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk_uv -N '' -O verify-required
-ssh-keygen -f id_ed25519_sk_user -t ed25519-sk -C 'johndoe@example.org user key' -N '' -O no-touch-required
+ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk_sign -C 'signing key' -N '' -O verify-required
 ```
 
 Test your key by signing a dummy message:
 
 ```
-echo I owe you a drink | ssh-keygen -Y sign -f ./id_ecdsa_sk_uv -n test
+echo I owe you a drink > message
+ssh-keygen -Y sign -f ./id_ecdsa_sk_sign -n test message
+```
+
+Note that the signature is written to the file `message.sig`.
+The `test` namespace is used to distinguish between different signing domains.
+
+- to verify signatures, we first need to specify the public keys we trust in a separate file:
+
+```
+echo -n 'johndoe@example.org ' > ./allowed_signers
+cat ./id_ecdsa_sk_sign.pub >> ./allowed_signers
+```
+
+So the `allowed_signers` file contains a list of SSH user IDs and their public keys.
+
+To verify the signature, refer to the signer identity and the list of trusted public keys:
+
+```
+ssh-keygen -Y verify -f ./allowed_signers -I johndoe@example.org -n test -s message.sig  < message
 ```
 
 # Git signing
 
-- Use a separate git directory to prevent conflicts with this script's own repo
+SSH signatures can also be used with Git: Both commits and tags can be signed.
+
+- Instead of using `.git`, use a separate git directory to prevent conflicts with this script's own git repository.
 
 ```
 export GIT_DIR=dotgit
+```
+
+Also, set these environment variable to not interfere with your current Git settings:
+```
 export GIT_CONFIG_GLOBAL=
 export GIT_CONFIG_SYSTEM=
 ```
@@ -29,25 +55,16 @@ export GIT_CONFIG_SYSTEM=
 git config -l
 ```
 
-Initialize a new repository:
+- Initialize a new Git repository with default branch `main`:
 
 ```
 git -c init.defaultBranch=main init
 ```
 
-Note that init requires a defaultBranch.
-
-- Make sure this is not a bare repo:
+- Make sure this is not a bare repository:
 
 ```
 git config core.bare false
-```
-
-- Add a dummy file
-
-```
-touch README
-git add README
 ```
 
 - Before comitting, configure a user name and email:
@@ -55,6 +72,12 @@ git add README
 ```
 git config user.name 'John Doe'
 git config user.email johndoe@example.org
+```
+
+- Now, add a dummy file:
+```
+touch README
+git add README
 ```
 
 - Commit:
@@ -69,19 +92,19 @@ git commit -m 'unsigned commit' README
 git log --oneline
 ```
 
-As of now, commits are unsigned, Let's fix that.
+As of now, commits are still unsigned, Let's fix that.
 
-- Configure signing by setting a format and a signing key:
+- Configure Git signing by setting a format and a signing key:
 
 ```
 git config gpg.format ssh
-git config user.signingkey ./id_ed25519_sk_user
+git config user.signingkey ./id_ecdsa_sk_sign
 ```
 
 - Stage a new commit:
 
 ```
-echo "commits should be signed" >> README 
+echo "commits should be signed" >> README
 git add README
 ```
 
@@ -91,7 +114,7 @@ git add README
 git commit -m 'signed commit' -S
 ```
 
-- Again, sheck the commit log:
+- Again, check the commit log:
 
 ```
 git log --show-signature
@@ -100,11 +123,15 @@ git log --show-signature
 Note that the commit has a signature now.
 Also note that the signatures are not trusted.
 
-- to verify signatures, we need to specify the public keys we trust:
+Optionally, show the signature with command
 
 ```
-echo -n 'johndoe@example.org ' > allowed_signers
-cat ./id_ed25519_sk_user.pub >> allowed_signers
+git cat-file HEAD -p
+```
+
+- to verify signatures, we still need to specify the public keys we trust using the `allowed_signers` file we created earlier:
+
+```
 git config gpg.ssh.allowedSignersFile ./allowed_signers
 ```
 
@@ -114,7 +141,7 @@ git config gpg.ssh.allowedSignersFile ./allowed_signers
 git log --oneline --show-signature
 ```
 
-Sign all commits by default:
+We can also sign all commits by default:
 
 ```
 git config commit.gpgsign true
@@ -123,31 +150,43 @@ git commit -m 'automatically signed commit' README
 git log --oneline --show-signature
 ```
 
+Note that we no longer needed to use the `-S` option to sign the commit.
+
 # Using a remote git server
 
+Currently, we do not have a remote origin configured:
 ```
 git config -l
 ```
 
-Configure a remote origin:
+So lets build another SSH server. To access that server, we could use our signing key, but it is better to use a separate authentication key instead:
+```
+ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk -C 'authentication key' -N ''
+```
 
+- Use the Dockerfile in this directory to create an SSH server with a bare git repository.
+
+```
+docker build --build-arg user=ubuntu -t ssh-server .
+docker run --rm -d -p 22:22 --name ssh_demo ssh-server
+```
+
+Configure a remote origin:
 ```
 git remote add origin ubuntu@localhost:scratch.git
 ```
 
+Check we now have our remote origin configured:
 ```
 git remote -v
 ```
 
-- Create an ssh configi file with the following contents:
-
+- Create an `sshconfig` file with the following contents:
 ```
 Host localhost
-    IdentityFile ./id_ecdsa
+    IdentityFile ./id_ecdsa_sk
     StrictHostKeyChecking accept-new
 ```
-
-- Use the Dockerfile in this directory to create an SSH server with a bare git repository.
 
 - Configure the SSH command git uses to access the git server:
 
@@ -161,32 +200,33 @@ export GIT_SSH_COMMAND="ssh -F ./sshconfig"
 git push --set-upstream origin main
 ```
 
+The Git push command now uses your SSH authentication key to access the remote origin.
+
 # Final notes
 
 Git signatures are also recognized by GitHub and GitLab.
 
 For instance, on GitHib, you can register your signing keys here:
 
+```
 https://github.com/settings/keys
+```
 
 Note however that
 
-1. all GitHub keys are implicitely trusted ("Verified"!
-2. Signing with hardware-backed keys doesn't make sense if you authenticate using passwords. Replace passwords with passkeys (https://github.com/settings/security)!
+1. all GitHub keys are implicitly trusted ("Verified")
+2. Signing with hardware-backed keys doesn't make sense if you authenticate using passwords. Replace GitHub passwords with passkeys (https://github.com/settings/security)!
 
 
 # Clean up
 
 - As before, stop the docker container and remove its image.
 
-
 ```
-make realclean
-```
+docker stop ssh_demo
+docker rmi ssh-server
 
-clean up
-
-```
-rm README allowed_signers id_ed25519_sk_user id_ed25519_sk_user.pub
+ssh-keygen -R 'localhost'
+rm message{,.sig} id_ecdsa_sk_sign{,.pub} ./id_ecdsa_sk{,.pub} allowed_signers
 rm -rf dotgit
 ```
