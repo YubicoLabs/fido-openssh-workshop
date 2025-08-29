@@ -32,9 +32,9 @@ MacOS also has a version pre-installed, but it is lacking a required FIDO Securi
 
 Other software that is probably already installed: 
 
-- Git version 2.34 or newer. Check with git --version
-- Python version 3.10 or newer. Check with python3 -V
-
+- Git version 2.34 or newer. Check with `git --version`
+- OpenSSL. Any version will do.
+- Python version 3.10 or newer. Check with `python3 -V`
 
 To save time downloading tools during the workshop, participants should have the following downloaded/installed in advance:
 
