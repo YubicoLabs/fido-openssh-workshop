@@ -108,7 +108,7 @@ Repeat the exercise, but now also require user verification (`-O verify-required
 The problem now is that usually, ssh-agent does not have a TTY to prompt for the PIN.
 This can be solved by a helper program such as `ssh-askpass`.
 
-- Install a version of `ssh-askpass` on your system that allows reading PINs without a terminal.
+- Install a version of `ssh-askpass` on your client system that allows reading PINs without a terminal.
 
 - Let ssh-agent know how to ask for a PIN:
 
@@ -121,3 +121,20 @@ If you do not have a `$DISPLAY` set, you may also need to specify:
 ```
 export SSH_ASKPASS_REQUIRE=force
 ```
+
+- Again, sign into the server using agent forwarding:
+
+```
+ssh -A ubuntu@localhost
+```
+
+This time, you will be asked for the PIN.
+Depending on your environment, the PIN prompt will appear in your terminal window, or in a separate window created by ssh-askpass.
+
+- Once signed in, sign a dummy message:
+```
+echo hello | ssh-keygen -Y sign -f id_ecdsa_sk.pub -n test
+```
+
+A window should appear on your client system asking for the PIN, and if the PIN verifies, 
+the message is signed on the server using the key residing on the security key connected to your client system.
