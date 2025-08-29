@@ -227,8 +227,6 @@ docker stop ssh_demo
 docker rmi ssh-server
 
 ssh-keygen -R 'localhost'
-
-rm README allowed_signers id_ecdsa_sk id_ecdsa_sk.pub id_ecdsa_sk_sign id_ecdsa_sk_sign.pub sshconfig
-
+rm message{,.sig} id_ecdsa_sk_sign{,.pub} ./id_ecdsa_sk{,.pub} allowed_signers
 rm -rf dotgit
 ```
