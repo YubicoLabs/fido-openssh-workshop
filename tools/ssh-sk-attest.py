@@ -9,7 +9,7 @@
 # openssl rand 128 > challenge.bin
 # ssh-keygen -t ${KEYTYPE} -f ./id_ecdsa_sk -N "" -O challenge=challenge.bin -O write-attestation=attestation.bin
 #
-# use OpenSSH 8.2 or later
+# use OpenSSH 8.4 or later
 # KEYTYPE can be "ecdsa-sk" or "ed25519-sk"
 
 # This script requires FIDO Metadata to validate attestation certificates
@@ -22,6 +22,9 @@
 #   fido2 - Yubico's FIDO 2 library to process attestations
 # install using pip:
 #   pip install fido2 requests
+#
+# TODO: use the official OpenSSH tool, once it is included in distributions
+# https://github.com/openssh/openssh-portable/blob/master/regress/misc/ssh-verify-attestation/ssh-verify-attestation.c
 
 import sys
 import argparse
