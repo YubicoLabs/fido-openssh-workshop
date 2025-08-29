@@ -80,7 +80,7 @@ def read_private_key(s):
     #case b'ecdsa-sha2-nistp256':
     #case b'ssh-ed25519':
     case _:
-      print(f"unsupported type '{ s }'", file=sys.stderr)
+      print(f"unsupported type '{ s.decode() }'", file=sys.stderr)
       sys.exit(1)
   app,s = read(s)
   result['app'] = str(app, 'utf-8')
@@ -149,7 +149,7 @@ def openssh_key_v1(s):
       #case b'ecdsa-sha2-nistp256':
       #case b'ssh-ed25519':
       case _:
-        print(f"unsupported key type '{ keytype }'", file=sys.stderr)
+        print(f"unsupported key type '{ keytype.decode() }'", file=sys.stderr)
         sys.exit(1)
     pubkeys.append(key)
   result['public_keys'] = pubkeys
