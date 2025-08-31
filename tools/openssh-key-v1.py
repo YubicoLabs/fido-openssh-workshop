@@ -45,11 +45,16 @@ flagnames = [
 #define SSH_SK_FORCE_OPERATION          0x10
 #define SSH_SK_RESIDENT_KEY             0x20
 
-  
-skfile = sys.argv[1]
-
-with open(skfile, "rb") as f:
-  contents = f.read()
+try:
+  skfile = sys.argv[1]
+  with open(skfile, "rb") as f:
+    contents = f.read()
+except IndexError:
+  print("usage: ", f"{sys.argv[0]} <ssh keyfile>")
+  exit()
+except Exception as e:
+  print(e)
+  exit()
 
 if not contents.isascii():
     print(f"expecting OpenSSH private key file '{ skfile }'", file=sys.stderr)
