@@ -41,7 +41,7 @@ The challenge must be saved in order to verify the attestation later.
 - Generate a new key pair with attestation using the challenge:
 
 ```
-ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk -N "" -O challenge=challenge.bin -O write-attestation=attestation.bin
+ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk -O challenge=challenge.bin -O write-attestation=attestation.bin
 ```
 
 The attestation is a signed statement generated on the security key using an attestation key.

@@ -161,7 +161,7 @@ git config -l
 
 So lets build another SSH server. To access that server, we could use our signing key, but it is better to use a separate authentication key instead:
 ```
-ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk -C 'authentication key' -N ''
+ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk -C 'authentication key'
 ```
 
 - Use the Dockerfile in this directory to create an SSH server with a bare git repository.

@@ -29,7 +29,10 @@
 ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk -N ''
 ```
 
-Note that the passphrase doesn't make sense here. The private key is stored on the security key, not in the private key file, so there is nothing that needs encryption.
+Note that a passphrase is not used here. The private key is stored on the security key, not in the private key file, so there is nothing that needs encryption.
+This does mean that someone that has physical access to the security key, as well as access to the private key file,
+can sign in on any server that trusts the public key.
+We will see [later](#user-verification) that there is a better way to prevent this from happening.
 
 - Using your Python virtual environment, run the script in the `tools` directory to inspect the private key file:
 
@@ -66,6 +69,11 @@ because the corresponding public key was copied into the user's `~/.ssh/authoriz
 # User Verification
 
 - Note that when signing in, user presence was required, but not user verification (i.e. no PIN was prompted for).
+This means anyone that has access to both the security key and the (unencrypted) key files can sign in on your server.
+Instead of encrypting the key file with a passphrase, let's use user verification.
+User verification is more secure than using a passphrase, as the former is used to authenticate to the security prior to any
+signing operation, while the latter is used to derive a decryption key to load the private key into memory.
+While the passphrase can be brute-forced, the security key will block when too many PIN attempts have failed.
 
 If you want the server to require user verification when signing in,
 you can do so by prepending the `verify-required` option to the entry in the `~/.ssh/authorized_keys` file.

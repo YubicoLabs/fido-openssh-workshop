@@ -12,7 +12,7 @@ If your security key doesn't, ask your instructor for one that does.
 - Generate the signing key for your CA (`id_userca`, `id_userca.pub`):
 
 ```
-ssh-keygen -t ecdsa -f ./id_userca -N '' -C ca@example.org
+ssh-keygen -t ecdsa -f ./id_userca -C ca@example.org
 ```
 
 Note that we store the CA private key in a file, but we could also have generated it on a security key.
@@ -103,7 +103,7 @@ ssh -i ./id_ecdsa ubuntu@localhost
 
 - Now extract the SSH key files from your security key:
 ```
-ssh-keygen -K -N ''
+ssh-keygen -K
 ```
 Note that the generated key files include the key type (`ecdsa_sk`), the fact that the key is resident (`rk`), the application suffix (`demo`), and the user name (`ubuntu`).
 

@@ -17,8 +17,9 @@ In this exercise we consider the second scenario.
 
 # Using ssh-agent with s security key
 
-Agent forwarding can be dangerous if you sign in to a rogue server - the server can access the agent running on your client remotely, and use private keys stored in memory unnoticed..
-When using a security key, you can mitigate this risk by requiring user presence or even user verification.
+Agent forwarding can be dangerous if you sign in on a compromised server - the server can access the agent running on your client remotely,
+and use private keys stored in memory unnoticed.
+When using a security key, you can mitigate this risk by requiring user presence and/or user verification.
 
 - Open a terminal and launch ssh-agent in the foreground
 
@@ -37,7 +38,7 @@ SSH_AUTH_SOCK=...; export SSH_AUTH_SOCK;
 - Generate a new SSH key using the default options (UP but not UV):
 
 ```
-ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk -N ""
+ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk
 ```
 
 - Verify you can use local signing using your private key:
