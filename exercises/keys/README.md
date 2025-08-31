@@ -25,48 +25,67 @@
 - Use `ssh-keygen` to generate a hardware-backed SSH key pair.
   Use type `ecdsa-sk` (`-t`) and store the key files locally using the name `id_ecdsa_sk `(`-f`). Do not use a passphrase (`-N`).
 
-```
-  ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk -N ''
+```sh
+ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk -N ''
 ```
 
 Note that the passphrase doesn't make sense here. The private key is stored on the security key, not in the private key file, so there is nothing that needs encryption.
 
 - Using your Python virtual environment, run the script in the `tools` directory to inspect the private key file:
 
+```sh
+../../tools/openssh-key-v1.py ./id_ecdsa_sk
 ```
-  ../../tools/openssh-key-v1.py ./id_ecdsa_sk
-```
-Notice that it only contains a handle to the private key on your security key (it's credential ID), not the private key itself!
+Notice that the private key file only contains a handle to the private key generated and stored on your security key (it's credential ID), not the private key itself!
 
 - Build a docker image using the Dockerfile in this directory:
 
+```sh
+docker build --build-arg user=ubuntu -t ssh-server .
 ```
-  docker build --build-arg user=ubuntu -t ssh-server .
-```
+The Dockerfile uses Ubuntu as a base image, installs OpenSSH, disables password authentication, copies the user's public key into their `.ssh/authorized_keys` file and starts the SSH server.
 
 - Run the docker container:
 
-```
-  docker run --rm -d -p 22:22 --name ssh_demo ssh-server
+```sh
+docker run --rm -d -p 22:22 --name ssh_demo ssh-server
 ```
 
 If you have a local sshd running, shut it down or use a different port.
 
 - Sign in to the SSH server using your hardware backed key:
 
+```sh
+ssh -i ./id_ecdsa_sk ubuntu@localhost
 ```
-  ssh -i ./id_ecdsa_sk ubuntu@localhost
-```
+
+The server will allow you to sign in using your hardware-backed SSH key,
+because the corresponding public key was copied into the user's `~/.ssh/authorized_keys` file
+(see the [Dockerfile](Dockerfile) used to build the server).
 
 # User Verification
 
 - Note that when signing in, user presence was required, but not user verification (i.e. no PIN was prompted for).
-Re-generate your keys with option `-O verify-required` and rebuild your server:
 
+If you want the server to require user verification when signing in,
+you can do so by prepending the `verify-required` option to the entry in the `~/.ssh/authorized_keys` file.
+
+- While signed in on your server, use your favorite text editor or `sed` to edit the `authorized_keys` key file
+for the `ubuntu` user and prepend the string "`verify-required `" to the line with your public key:
+
+```sh
+sed -e 's/^/verify-required /' -i  ~/.ssh/authorized_keys
 ```
-  docker stop ssh_demo
-  docker build --build-arg user=ubuntu -t ssh-server .
-  docker run --rm -d -p 22:22 --name ssh_demo ssh-server
+
+- Try to sign in on the server again. Notice that this is no longer allowed, since user verification was never performed.
+
+To fix this, re-generate your keys with option `-O verify-required` and rebuild your server:
+
+```sh
+ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk -N '' -O verify-required
+docker stop ssh_demo
+docker build --build-arg user=ubuntu -t ssh-server .
+docker run --rm -d -p 22:22 --name ssh_demo ssh-server
 ```
 
 - Sign in again and note that you are now prompted for a PIN
@@ -108,7 +127,7 @@ The columns represent an index, your credential's ID, the user display name, use
 - Verify your key is listed as an authentication key:
 
 ```sh
-  curl https://github.com/<username>.keys
+curl https://github.com/<username>.keys
 ```
 
 where `<username>` is your GitHub username.
