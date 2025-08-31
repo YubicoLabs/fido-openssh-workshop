@@ -189,7 +189,8 @@ def p(data, number_of_keys):
   # a random integer is assigned to both checkint fields so successful decryption can be quickly checked by verifying that both checkint fields hold the same value.
   checkint1,data = readn(data,4)
   checkint2,data = readn(data,4)
-  assert(checkint1 == checkint2)
+  if checkint1 != checkint2:
+    raise Exception("Cannot decrypt encrypted key files")
 
   for x in range(0, number_of_keys):
     result, data = read_private_key(data)
@@ -198,10 +199,11 @@ def p(data, number_of_keys):
   assert(padding == data)
   return result
 
-openssh_keys = openssh_key_v1(sshkey)
-print(yaml.dump(openssh_keys))
-
-#print(str(base64.b64encode(handle),'utf-8'))
+try:
+  openssh_keys = openssh_key_v1(sshkey)
+  print(yaml.dump(openssh_keys))
+except Exception as e:
+  print(e)  
 
 # credProtect is required for -O resident and -O verify-required
 
