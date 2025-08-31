@@ -1,20 +1,21 @@
 # LargeBlobs: storing an SSH certificate on a FIDO security key
 
 In this exercise we are using SSH certificates to sign in to a server.
-Using resident keys, we can always regenerate SSH key files.
-Using largeBlobs, we can also store the certificate.
+Just like with bare SSH keys, FIDO security keys can also be used with SSH certificates.
+As shown in the first exercise, using resident keys, we can always regenerate SSH key files from the security key (with `ssh-keygen -K`).
+Using the FIDO largeBlobs feature, we can also store the SSH certificates on security keys.
 
-- use command `fido2-token -I <device>` to check if largeBlobs are supported on your security keys: (`options: largeBlobs`)
+- Use command `fido2-token -I <device>` to check if largeBlobs are supported on your security key: (`options: largeBlobs`)
 
 If your security key doesn't, ask your instructor for one that does.
 
-- generate the CA key pair (`id_userca`, `id_userca.pub`):
+- Generate the signing key for your CA (`id_userca`, `id_userca.pub`):
 
 ```
 ssh-keygen -t ecdsa -f ./id_userca -N '' -C ca@example.org
 ```
 
-Note that we store the CA private key in a file, but we might just as well have generated it on a security key.
+Note that we store the CA private key in a file, but we could also have generated it on a security key.
 
 - Generate a resident SSH key on a security key (`id_ecdsa`, `id_ecdsa.pub`):
 
@@ -33,16 +34,18 @@ Note the (base64-encoded) credential ID.
 
 - Now use the CA key (`id_userca`) to sign your pubkey (`id_ecdsa.pub`) into an SSH certificate (`id_ecdsa-cert.pub`):
 ```
-ssh-keygen -s ./id_userca -I ubuntu@example.org -V +52w -n ubuntu,ubuntu@example.org id_ecdsa.pub
+ssh-keygen -s ./id_userca -I ubuntu@example.org -V +52w -n ubuntu,ubuntu@example.org -O verify-required id_ecdsa.pub
 ```
 The certificate will be valid (`-V`) until 52 weeks from now, and is bound to user names (`-n`) `ubuntu` and `ubuntu@example.org`.
+Furthermore, a critical option is added to the certificate indicating that accepting signatures made using this key require user verification.
+This means that the certificate can only be used to sign in on servers accepting certificates issued by the CA when user verification is performed.
 
-- View the generated certificate
+- View the generated certificate contents:
 ```
 ssh-keygen -f ./id_ecdsa-cert.pub -L
 ```
 
-- Store the certificate in a largeBLob on your security key, associated with your credential for the `ssh:demo` application.
+- Store the certificate in a largeBlob on your security key, associated with your credential for the `ssh:demo` application.
 ```
 fido2-token -S -b -n ssh:demo id_ecdsa-cert.pub <device>
 ```
