@@ -68,9 +68,10 @@ because the corresponding public key was copied into the user's `~/.ssh/authoriz
 
 # User Verification
 
-- Note that when signing in, user presence was required, but not user verification (i.e. no PIN was prompted for).
+Note that when signing in, user presence was required, but not user verification (i.e. no PIN was prompted for).
 This means anyone that has access to both the security key and the (unencrypted) key files can sign in on your server.
 Instead of encrypting the key file with a passphrase, let's use user verification.
+
 User verification is more secure than using a passphrase, as the former is used to authenticate to the security prior to any
 signing operation, while the latter is used to derive a decryption key to load the private key into memory.
 While the passphrase can be brute-forced, the security key will block when too many PIN attempts have failed.
