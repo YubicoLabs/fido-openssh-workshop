@@ -20,6 +20,10 @@
 
   - Verify that your security key supports user presence (`options: up`)
 
+  - Verify that your security key supports the credProtect extension (`extension strings: credProtect`)
+
+The `credProtect` extension is required by OpenSSH if you want to enforce user verification for your SSH keys, or when you want to create resident keys.
+
 # Key generation
 
 - Use `ssh-keygen` to generate a hardware-backed SSH key pair.
