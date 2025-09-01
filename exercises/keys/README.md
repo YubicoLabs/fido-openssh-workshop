@@ -72,7 +72,7 @@ Note that when signing in, user presence was required, but not user verification
 This means anyone that has access to both the security key and the (unencrypted) key files can sign in on your server.
 Instead of encrypting the key file with a passphrase, let's use user verification.
 
-User verification is more secure than using a passphrase, as the former is used to authenticate to the security prior to any
+User verification is more secure than using a passphrase, as the former is used to authenticate to the security key prior to any
 signing operation, while the latter is used to derive a decryption key to load the private key into memory.
 While the passphrase can be brute-forced, the security key will block when too many PIN attempts have failed.
 
@@ -98,6 +98,9 @@ docker run --rm -d -p 22:22 --name ssh_demo ssh-server
 ```
 
 - Sign in again and note that you are now prompted for a PIN
+
+If you have a security key with built-in user verification (for instance with a fingerprint reader), you are still prompted for the PIN.
+You can however enter an empty PIN, after which you can perform user verification to sign in.
 
 # Resident keys
 
