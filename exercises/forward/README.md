@@ -5,13 +5,14 @@ Instead, the passphrase is only required to decrypt the private key when adding 
 
 Because security keys cannot export private keys, SSH keys cannot be loaded into memory by ssh-agent.
 Instead, a reference (the credential ID) to the private key is loaded.
-This is why it doesn't make sense to use a passphrase to protect the private key file - it doesn't contain a private key.
-It also means ssh-agent is not often used with security keys.
+This is why you don't need a passphrase to protect the private key file - it doesn't contain a private key.
+As a second factor, require user verification instead.
 
+It also means ssh-agent is not often used with security keys.
 There are exceptions though. For instance:
 
 1. When both UV and UP are not required. Although that is usually not a good idea (the security key is reduced to a posession-only factor), it may make sense in some automation scenarios where it is unfeasible to perform UV/UP a large number of times.
-2. When using agent-forwarding, i.e. using SSH agent on a client to access a private key on a server.
+2. When using agent-forwarding, i.e. using SSH agent on a client to access a private key from a server.
 
 In this exercise we consider the second scenario.
 
@@ -19,7 +20,11 @@ In this exercise we consider the second scenario.
 
 Agent forwarding can be dangerous if you sign in on a compromised server - the server can access the agent running on your client remotely,
 and use private keys stored in memory unnoticed.
-When using a security key, you can mitigate this risk by requiring user presence and/or user verification.
+This is why you should only use agent forwarding on servers you fully trust.
+As of OpenSSH version 8.9, you can add *destination contraints* when adding keys to ssh-agent, whitelisting servers that are allowed to access your key (`ssh-add -h`).
+See also [SSH agent restriction]()https://www.openssh.com/agent-restrict.html).
+
+When using a security key, you can further mitigate this risk by requiring user presence and/or user verification to unlock access to the private key.
 
 - Open a terminal and launch ssh-agent in the foreground
 
