@@ -90,3 +90,10 @@ the tool does the following:
 - issue a warning if the security key is not FIDO certified, has no hardware protection
 
 If all checks pass, the security key AAGUID and description are printed without warnings.
+
+# Clean up
+
+Delete the challenge, attestation, FIDO metadata and key files:
+```
+rm ./challenge.bin ./attestation.bin ./mds.jwt ./id_ecdsa_sk{,.pub}
+```
