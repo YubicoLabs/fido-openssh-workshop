@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 import base64
@@ -51,10 +51,10 @@ try:
     contents = f.read()
 except IndexError:
   print("usage: ", f"{sys.argv[0]} <ssh keyfile>")
-  exit()
+  sys.exit(1)
 except Exception as e:
   print(e)
-  exit()
+  sys.exit(1)
 
 if not contents.isascii():
     print(f"expecting OpenSSH private key file '{ skfile }'", file=sys.stderr)
@@ -85,7 +85,7 @@ def read_private_key(s):
     #case b'ecdsa-sha2-nistp256':
     #case b'ssh-ed25519':
     case _:
-      print(f"unsupported type '{ s.decode() }'", file=sys.stderr)
+      print(f"unsupported type '{ keytype.decode() }'", file=sys.stderr)
       sys.exit(1)
   app,s = read(s)
   result['app'] = str(app, 'utf-8')
@@ -128,7 +128,6 @@ def openssh_key_v1(s):
   kdfname, s = read(s)
   result['kdfname'] = str(kdfname, 'utf-8')
   kdfoptions, s = read(s)
-  result['kdfoptions'] = kdfoptions
   result['kdfoptions_hex'] = kdfoptions.hex()
   n,s = readn(s, 4)
   number_of_keys, = struct.unpack('>i', n)
@@ -160,7 +159,7 @@ def openssh_key_v1(s):
   result['public_keys'] = pubkeys
   private_keys, s = read(s)
   assert(s == b'')
-  x = p(private_keys, number_of_keys)
+  x = parse_private_key_list(private_keys, number_of_keys)
   result['private_keys'] = [x]
   return { 'openssh-key-v1': result }
 
@@ -185,7 +184,7 @@ def openssh_key_v1(s):
 #	...
 #	byte	padlen % 255
 
-def p(data, number_of_keys):
+def parse_private_key_list(data, number_of_keys):
   # a random integer is assigned to both checkint fields so successful decryption can be quickly checked by verifying that both checkint fields hold the same value.
   checkint1,data = readn(data,4)
   checkint2,data = readn(data,4)
@@ -203,7 +202,8 @@ try:
   openssh_keys = openssh_key_v1(sshkey)
   print(yaml.dump(openssh_keys))
 except Exception as e:
-  print(e)  
+  print(e)
+  sys.exit(1)
 
 # credProtect is required for -O resident and -O verify-required
 
