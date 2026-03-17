@@ -28,7 +28,7 @@ Participants should bring a laptop (Linux or macOS is recommended) and a securit
 
 For the exercises, you should of course have the OpenSSH client installed. Version 8.2 is a minimum, but 8.9 or later is preferred.
 Linux distributions will have OpenSSH installed by default. 
-MacOS also has a version pre-installed, but it is lacking a required FIDO SecurityKeyProvider. Instead install from [brew](https://brew.sh/).
+macOS also has a version pre-installed, but it lacks a required FIDO SecurityKeyProvider. Instead, install from [brew](https://brew.sh/).
 
 Other software that is probably already installed: 
 
@@ -38,7 +38,7 @@ Other software that is probably already installed:
 
 To save time downloading tools during the workshop, participants should have the following downloaded/installed in advance:
 
-- Docker Desktop (or something similar, eg podman) to run Docker containers.
+- Docker Desktop (or something similar, e.g., podman) to run Docker containers.
 
 	[https://www.docker.com/products/docker-desktop/](https://www.docker.com/products/docker-desktop/)
 
@@ -58,12 +58,12 @@ To save time downloading tools during the workshop, participants should have the
 
 ### Python virtual environment
 
-To run the python scripts in this repository, it is recommended to use a virtual environment:
+To run the Python scripts in this repository, it is recommended to use a virtual environment:
 ```sh
 	python3 -m venv venv
 	source venv/bin/activate
 ```
-to install the dependencies used:
+Then install the dependencies:
 ```sh
 	pip install fido2 requests PyYAML
 ```

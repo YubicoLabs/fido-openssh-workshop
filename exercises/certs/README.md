@@ -89,7 +89,7 @@ ssh -i ./id_ecdsa ubuntu@localhost
 # Signing in from another system
 
 Now, all required files are stored on your security key.
-This means you only need yout security key when signing in from another system.
+This means you only need your security key when signing in from another system.
 
 - To verify, instead of using another system, remove all ssh user key files, including the certificate:
 ```
@@ -111,7 +111,7 @@ Note that the generated key files include the key type (`ecdsa_sk`), the fact th
 ```
 fido2-token -G -b -n ssh:demo ./id_ecdsa_sk_rk_demo_ubuntu-cert.pub <device>
 ```
-Note that the filename `id_ecdsa_sk_rk_demo_ubuntu-cert.pub` was choosen to match the names of the files generated in the previous step.
+Note that the filename `id_ecdsa_sk_rk_demo_ubuntu-cert.pub` was chosen to match the names of the files generated in the previous step.
 
 - You should now have restored the SSH key files as well as your certificate:
 ```
@@ -124,7 +124,7 @@ ls -l ./id_ecdsa*
 ssh -i ./id_ecdsa_sk_rk_demo_ubuntu ubuntu@localhost
 ```
 
-# cleaning up
+# Cleaning up
 
 As before, clean up the docker container and image:
 
@@ -140,7 +140,7 @@ Optionally, also delete the largeblob from your security key:
 fido2-token -D -b -n ssh:demo <device>
 ```
 
-Also delete the corresponsing resident credential:
+Also delete the corresponding resident credential:
 
 ```
 fido2-token -D -i $(fido2-token -L -k ssh:demo <device> | cut -d' ' -f2) <device>

@@ -4,24 +4,24 @@ In this exercise, we look at FIDO device attestation.
 This lets you prove that a FIDO credential was generated on a particular security key make and model.
 
 Note that in some cases, you don't need to bother with attestations - you already know what security key you are using to sign into servers you control.
-But in other cases where an entity that authenticates users or verifies signatures using a public key wants to make sure the corresponding private key is well-protected and non-exportable.
+But in other cases, an entity that authenticates users or verifies signatures using a public key may want to make sure the corresponding private key is well-protected and non-exportable.
 
 This can for instance be used by a company's SSH CA, that only wants to sign SSH pubkeys for its users if there is proof that the corresponding private key is under protection of a security key.
-Or, it can be used by the owner of a Git repository, that only wants to merge a pull requests if all commits are signed using a security key by a user they trust.
+Or, it can be used by the owner of a Git repository, that only wants to merge pull requests if all commits are signed using a security key by a user they trust.
 
 # FIDO metadata
 
-Device attestation uses FIDO metadata to lookup specific properties of a security key.
+Device attestation uses FIDO metadata to look up specific properties of a security key.
 Every security key make and model is identified by an identifier called an AAGUID.
 This identifier is not unique for the device (so cannot be used to identify a specific security key),
 but is specific to a vendor and model (typically up to its firmware version).
 
-- Use `fido2-token` to lookup the AAGUID for your security key.
+- Use `fido2-token` to look up the AAGUID for your security key.
 
 Security key vendors can register metadata for their devices with the FIDO Alliance in the 
 [FIDO Metadata Service (MDS)](https://fidoalliance.org/metadata/).
 
-- Lookup the metadata for your security key, based on that AAGUID, using the FIDO MDS explorer:
+- Look up the metadata for your security key, based on that AAGUID, using the FIDO MDS explorer:
 
     https://opotonniee.github.io/fido-mds-explorer/
 
@@ -64,7 +64,7 @@ curl -Ls https://mds.fidoalliance.org/ --output mds.jwt
 
 This should generate a file `mds.jwt` with FIDO metadata.
 
-We are using a python tool to verify the attestation agains FIDO metadata.
+We are using a Python tool to verify the attestation against FIDO metadata.
 
 - To run this tool, first create a Python virtual environment - see the instructions here:
 

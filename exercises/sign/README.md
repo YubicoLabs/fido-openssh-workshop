@@ -43,7 +43,7 @@ SSH signatures can also be used with Git: Both commits and tags can be signed.
 export GIT_DIR=dotgit
 ```
 
-Also, set these environment variable to not interfere with your current Git settings:
+Also, set these environment variables to not interfere with your current Git settings:
 ```
 export GIT_CONFIG_GLOBAL=
 export GIT_CONFIG_SYSTEM=
@@ -67,7 +67,7 @@ git -c init.defaultBranch=main init
 git config core.bare false
 ```
 
-- Before comitting, configure a user name and email:
+- Before committing, configure a user name and email:
 
 ```
 git config user.name 'John Doe'
@@ -92,7 +92,7 @@ git commit -m 'unsigned commit' README
 git log --oneline
 ```
 
-As of now, commits are still unsigned, Let's fix that.
+As of now, commits are still unsigned. Let's fix that.
 
 - Configure Git signing by setting a format and a signing key:
 
@@ -135,7 +135,7 @@ git cat-file HEAD -p
 git config gpg.ssh.allowedSignersFile ./allowed_signers
 ```
 
-- Again, sheck the commit log:
+- Again, check the commit log:
 
 ```
 git log --oneline --show-signature
@@ -159,7 +159,7 @@ Currently, we do not have a remote origin configured:
 git config -l
 ```
 
-So lets build another SSH server. To access that server, we could use our signing key, but it is better to use a separate authentication key instead:
+So let's build another SSH server. To access that server, we could use our signing key, but it is better to use a separate authentication key instead:
 ```
 ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk -C 'authentication key'
 ```
@@ -206,7 +206,7 @@ The Git push command now uses your SSH authentication key to access the remote o
 
 Git signatures are also recognized by GitHub and GitLab.
 
-For instance, on GitHib, you can register your signing keys here:
+For instance, on GitHub, you can register your signing keys here:
 
 ```
 https://github.com/settings/keys

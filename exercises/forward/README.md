@@ -11,18 +11,18 @@ As a second factor, require user verification instead.
 It also means ssh-agent is not often used with security keys.
 There are exceptions though. For instance:
 
-1. When both UV and UP are not required. Although that is usually not a good idea (the security key is reduced to a posession-only factor), it may make sense in some automation scenarios where it is unfeasible to perform UV/UP a large number of times.
+1. When both UV and UP are not required. Although that is usually not a good idea (the security key is reduced to a possession-only factor), it may make sense in some automation scenarios where it is unfeasible to perform UV/UP a large number of times.
 2. When using agent-forwarding, i.e. using SSH agent on a client to access a private key from a server.
 
 In this exercise we consider the second scenario.
 
-# Using ssh-agent with s security key
+# Using ssh-agent with a security key
 
 Agent forwarding can be dangerous if you sign in on a compromised server - the server can access the agent running on your client remotely,
 and use private keys stored in memory unnoticed.
 This is why you should only use agent forwarding on servers you fully trust.
-As of OpenSSH version 8.9, you can add *destination contraints* when adding keys to ssh-agent, whitelisting servers that are allowed to access your key (`ssh-add -h`).
-See also [SSH agent restriction]()https://www.openssh.com/agent-restrict.html).
+As of OpenSSH version 8.9, you can add *destination constraints* when adding keys to ssh-agent, whitelisting servers that are allowed to access your key (`ssh-add -h`).
+See also [SSH agent restriction](https://www.openssh.com/agent-restrict.html).
 
 When using a security key, you can further mitigate this risk by requiring user presence and/or user verification to unlock access to the private key.
 
