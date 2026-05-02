@@ -1,6 +1,6 @@
 # Getting to know your security key
 
-- Insert your security key and use `fido2-token -L` to list its device file (e.g. `/dev/hidraw0` on linux or `ioreg:n` on macOS)
+- Insert your security key and use `fido2-token -L` to list its device file (e.g. `/dev/hidraw0` on Linux or `ioreg:n` on macOS)
 
 - Use `fido2-token -I <device>` to get information on your security key
 
@@ -27,7 +27,7 @@ The `credProtect` extension is required by OpenSSH if you want to enforce user v
 # Key generation
 
 - Use `ssh-keygen` to generate a hardware-backed SSH key pair.
-  Use type `ecdsa-sk` (`-t`) and store the key files locally using the name `id_ecdsa_sk `(`-f`). Do not use a passphrase (`-N`).
+  Use type `ecdsa-sk` (`-t`) and store the key files locally using the name `id_ecdsa_sk` (`-f`). Do not use a passphrase (`-N`).
 
 ```sh
 ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk -N ''
@@ -43,7 +43,7 @@ We will see [later](#user-verification) that there is a better way to prevent th
 ```sh
 ../../tools/openssh-key-v1.py ./id_ecdsa_sk
 ```
-Notice that the private key file only contains a handle to the private key generated and stored on your security key (it's credential ID), not the private key itself!
+Notice that the private key file only contains a handle to the private key generated and stored on your security key (its credential ID), not the private key itself!
 
 - Build a docker image using the Dockerfile in this directory:
 
@@ -60,7 +60,7 @@ docker run --rm -d -p 22:22 --name ssh_demo ssh-server
 
 If you have a local sshd running, shut it down or use a different port.
 
-- Sign in to the SSH server using your hardware backed key:
+- Sign in to the SSH server using your hardware-backed key:
 
 ```sh
 ssh -i ./id_ecdsa_sk ubuntu@localhost
@@ -164,7 +164,7 @@ With resident keys, you can regenerate the key files from data stored on your se
 
 - Restore the key files using `ssh-keygen -K`
 
-Note that all files have been regenerated, but to prevent files from overwriting one another, the files names have a naming convention that includes the options used to create them.
+Note that all files have been regenerated, but to prevent files from overwriting one another, the file names follow a naming convention that includes the options used to create them.
 
 - Verify that you can still authenticate to GitHub using the regenerated key files.
 

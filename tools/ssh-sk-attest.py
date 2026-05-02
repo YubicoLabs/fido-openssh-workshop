@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # verify attestation information to cryptographically prove that a given key is hardware-backed. 
 # For instance:
@@ -15,7 +15,7 @@
 # This script requires FIDO Metadata to validate attestation certificates
 # Download an mds blob from the FIDO Alliance:
 #
-# curl -Ls https://mds3.fidoalliance.org/ --output mds.jwt
+# curl -Ls https://mds.fidoalliance.org/ --output mds.jwt
 
 # This script requires
 #   requests - for downloading MDS3 metadata
@@ -76,7 +76,8 @@ def verifyAttestation(attestation, challenge):
     signedData = b''.join([authData, clientDataHash])
     signature = attestation['signature']
     attestation_certificate = attestation['certificate']
-    assert isinstance( attestation_certificate.public_key(), ec.EllipticCurvePublicKey )
+    if not isinstance( attestation_certificate.public_key(), ec.EllipticCurvePublicKey ):
+        raise ValueError("attestation certificate uses an unsupported key type")
     attestation_certificate.public_key().verify(signature, signedData, ec.ECDSA(hashes.SHA256()))
 
 def verifyAttestationU2F(attestation, challenge):
@@ -86,7 +87,8 @@ def verifyAttestationU2F(attestation, challenge):
     signedData = b''.join([b'\00', authData.rp_id_hash, sha256(challenge).digest(), credentialData.credential_id, key])
     signature = attestation['signature']
     attestation_certificate = attestation['certificate']
-    assert isinstance( attestation_certificate.public_key(), ec.EllipticCurvePublicKey )
+    if not isinstance( attestation_certificate.public_key(), ec.EllipticCurvePublicKey ):
+        raise ValueError("attestation certificate uses an unsupported key type")
     attestation_certificate.public_key().verify(signature, signedData, ec.ECDSA(hashes.SHA256()))
 
 # parse SSH pubkey file
@@ -119,7 +121,7 @@ def parsePubkey(key):
             raise Exception('unsupported SSH key type')
 
 # the fido alliance metadata URL
-mdsurl = 'https://mds3.fidoalliance.org/'
+mdsurl = 'https://mds.fidoalliance.org/'
 # the root CA used to verify the FIDO Metadata Statement blob
 MDS_CA = b64decode(
     """
@@ -207,9 +209,9 @@ except FileNotFoundError:
 
 # verify attestation signature, assuming packed attestation
 try:
-    verifyAttestation(attestation, challenge) 
-except AssertionError:
-    print(f"❌ Attestation certificate uses an unsupported key type", file=sys.stderr)
+    verifyAttestation(attestation, challenge)
+except ValueError as e:
+    print(f"❌ {e}", file=sys.stderr)
     sys.exit(1)
 except exceptions.InvalidSignature:
     # Invalid packed attestation signature, retry with fido-u2f
