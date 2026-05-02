@@ -151,7 +151,7 @@ where `<username>` is your GitHub username.
 - Test SSH access to GitHub:
 
 ```sh
-ssh -T git@github.com -i <identity_file>
+ssh -T git@github.com -o "IdentitiesOnly=yes" -i <identity_file>
 ```
 
 # Generating key files for resident keys
