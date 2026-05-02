@@ -216,7 +216,7 @@ unset GIT_DIR GIT_CONFIG_GLOBAL GIT_CONFIG_SYSTEM
 Then remove the exercise files:
 
 ```
-rm message{,.sig} id_ecdsa_sk_sign{,.pub} allowed_signers
+rm message{,.sig} id_ecdsa_sk_sign{,.pub} allowed_signers README
 rm -rf dotgit
 ```
 
