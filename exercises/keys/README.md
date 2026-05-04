@@ -37,7 +37,7 @@ The `credProtect` extension is required by OpenSSH if you want to enforce user v
 ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk -N ''
 ```
 
-You can run this from any directory. The `-f` flag saves the files wherever you currently are. Regular SSH keys normally go in `~/.ssh/`, but with FIDO keys it doesn't matter because the private key is on the security key, not in the file.
+This `ssh-keygen` command would work from any directory, and the `-f` flag saves the files relative to wherever you currently are. For this exercise, keep running commands from `exercises/keys` so the later relative paths continue to work. Regular SSH keys normally go in `~/.ssh/`, but with FIDO keys it doesn't matter because the private key is on the security key, not in the file.
 
 Note that a passphrase is not used here. The private key is stored on the security key, not in the private key file, so there is nothing that needs encryption.
 This does mean that someone that has physical access to the security key, as well as access to the private key file,
@@ -130,7 +130,7 @@ Note: Resident keys are called discoverable credentials since FIDO 2.1, but Open
 ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk -N '' -O resident
 ```
 
-If you are prompted that a resident key already exists, you can overwrite it.
+If you are prompted that a resident key already exists, you can overwrite it. If you are using a personal security key and not one dedicated to these exercises, make sure you don't overwrite any resident keys you want to keep. You can store multiple SSH keys on your security key using different RP IDs - see the [GitHub section](#github) below for an example.
 
 - Use `fido2-token -L -r <device>` to see if your new key is stored on your security key.
 

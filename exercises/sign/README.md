@@ -179,7 +179,7 @@ If you have time, you can also push your signed commits to a local SSH server us
 
 Generate a separate authentication key (best practice: don't reuse your signing key for auth):
 ```
-ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk -C 'authentication key' -N ''
+ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk -C 'authentication key'
 ```
 
 Build and run the SSH server:
@@ -190,17 +190,32 @@ docker run --rm -d -p 22:22 --name ssh_demo ssh-server
 
 > **Note:** The authentication key (`id_ecdsa_sk.pub`) must exist before building the Docker image, since the Dockerfile copies it into the container.
 
-Configure a remote origin and push:
+If you have a local sshd running, shut it down or use a different port (e.g. `-p 2222:22`, then adjust the remote URL to `ssh://ubuntu@localhost:2222/~/scratch.git`).
+
+Configure a remote origin:
 ```
 git remote add origin ubuntu@localhost:scratch.git
+```
 
+- Create an `sshconfig` file to tell SSH which key to use:
+
+```
 cat > sshconfig << 'EOF'
 Host localhost
     IdentityFile ./id_ecdsa_sk
     StrictHostKeyChecking accept-new
 EOF
+```
 
+- Configure the SSH command git uses to access the git server:
+
+```
 export GIT_SSH_COMMAND="ssh -F ./sshconfig"
+```
+
+- Push your repo to the server:
+
+```
 git push --set-upstream origin main
 ```
 

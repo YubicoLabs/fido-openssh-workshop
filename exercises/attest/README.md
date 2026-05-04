@@ -1,4 +1,4 @@
-Run all commands in this exercise from the `exercises/attest` directory.
+Start this exercise in the `exercises/attest` directory.
 
 # FIDO device attestation: verify security key provenance
 
