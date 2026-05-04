@@ -115,6 +115,7 @@ If all checks pass, the security key AAGUID and description are printed without 
 
 # Clean up
 
+Delete the challenge, attestation, FIDO metadata and key files:
 ```
 rm id_ecdsa_sk{,.pub} challenge.bin attestation.bin mds.jwt
 ```

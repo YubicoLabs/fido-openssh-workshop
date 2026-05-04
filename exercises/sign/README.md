@@ -226,5 +226,5 @@ If you also did the optional remote server section:
 docker stop ssh_demo
 docker rmi ssh-server
 ssh-keygen -R 'localhost'
-rm ./id_ecdsa_sk{,.pub} sshconfig
+rm id_ecdsa_sk{,.pub} sshconfig
 ```
