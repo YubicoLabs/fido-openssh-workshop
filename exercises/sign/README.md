@@ -1,14 +1,16 @@
+Run all commands in this exercise from the `exercises/sign` directory.
+
 # Signing
 
 In this exercise we will use hardware-backed SSH keys to generate digital signatures.
 
-Generate a new signing key:
+- Generate a new signing key:
 
 ```
 ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk_sign -C 'signing key' -N '' -O verify-required
 ```
 
-Test your key by signing a dummy message:
+- Test your key by signing a dummy message:
 
 ```
 echo I owe you a drink > message
@@ -18,7 +20,7 @@ ssh-keygen -Y sign -f ./id_ecdsa_sk_sign -n test message
 Note that the signature is written to the file `message.sig`.
 The `test` namespace is used to distinguish between different signing domains.
 
-- to verify signatures, we first need to specify the public keys we trust in a separate file:
+- To verify signatures, we first need to specify the public keys we trust in a separate file:
 
 ```
 echo -n 'johndoe@example.org ' > ./allowed_signers
@@ -27,7 +29,7 @@ cat ./id_ecdsa_sk_sign.pub >> ./allowed_signers
 
 So the `allowed_signers` file contains a list of SSH user IDs and their public keys.
 
-To verify the signature, refer to the signer identity and the list of trusted public keys:
+- To verify the signature, refer to the signer identity and the list of trusted public keys:
 
 ```
 ssh-keygen -Y verify -f ./allowed_signers -I johndoe@example.org -n test -s message.sig  < message
@@ -123,13 +125,13 @@ git log --show-signature
 Note that the commit has a signature now.
 Also note that the signatures are not trusted.
 
-Optionally, show the signature with command
+Optionally, show the raw commit object including the signature:
 
 ```
-git cat-file HEAD -p
+git cat-file -p HEAD
 ```
 
-- to verify signatures, we still need to specify the public keys we trust using the `allowed_signers` file we created earlier:
+- To verify signatures, we still need to specify the public keys we trust using the `allowed_signers` file we created earlier:
 
 ```
 git config gpg.ssh.allowedSignersFile ./allowed_signers
@@ -152,40 +154,57 @@ git log --oneline --show-signature
 
 Note that we no longer needed to use the `-S` option to sign the commit.
 
+# GitHub
+
+Git signatures are also recognized by GitHub and GitLab.
+
+- View your signing public key:
+
+```
+cat ./id_ecdsa_sk_sign.pub
+```
+
+- Register this public key at GitHub (https://github.com/settings/keys). Click "New SSH key", set the type to **Signing Key**, and paste the full public key line.
+
+Once registered, any commits signed with this key and pushed to GitHub will show a "Verified" badge.
+
+Note that:
+
+1. All GitHub signing keys are implicitly trusted ("Verified") for commits made by that account.
+2. Signing with hardware-backed keys doesn't make sense if you authenticate using passwords. Replace GitHub passwords with passkeys (https://github.com/settings/security)!
+
 # Using a remote git server
 
-Currently, we do not have a remote origin configured:
-```
-git config -l
-```
+If you have time, you can also push your signed commits to a local SSH server using Docker.
 
-So let's build another SSH server. To access that server, we could use our signing key, but it is better to use a separate authentication key instead:
+Generate a separate authentication key (best practice: don't reuse your signing key for auth):
 ```
 ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk -C 'authentication key'
 ```
 
-- Use the Dockerfile in this directory to create an SSH server with a bare git repository.
-
+Build and run the SSH server:
 ```
 docker build --build-arg user=ubuntu -t ssh-server .
 docker run --rm -d -p 22:22 --name ssh_demo ssh-server
 ```
+
+> **Note:** The authentication key (`id_ecdsa_sk.pub`) must exist before building the Docker image, since the Dockerfile copies it into the container.
+
+If you have a local sshd running, shut it down or use a different port (e.g. `-p 2222:22`, then adjust the remote URL to `ssh://ubuntu@localhost:2222/~/scratch.git`).
 
 Configure a remote origin:
 ```
 git remote add origin ubuntu@localhost:scratch.git
 ```
 
-Check we now have our remote origin configured:
-```
-git remote -v
-```
+- Create an `sshconfig` file to tell SSH which key to use:
 
-- Create an `sshconfig` file with the following contents:
 ```
+cat > sshconfig << 'EOF'
 Host localhost
     IdentityFile ./id_ecdsa_sk
     StrictHostKeyChecking accept-new
+EOF
 ```
 
 - Configure the SSH command git uses to access the git server:
@@ -200,33 +219,27 @@ export GIT_SSH_COMMAND="ssh -F ./sshconfig"
 git push --set-upstream origin main
 ```
 
-The Git push command now uses your SSH authentication key to access the remote origin.
-
-# Final notes
-
-Git signatures are also recognized by GitHub and GitLab.
-
-For instance, on GitHub, you can register your signing keys here:
-
-```
-https://github.com/settings/keys
-```
-
-Note however that
-
-1. all GitHub keys are implicitly trusted ("Verified")
-2. Signing with hardware-backed keys doesn't make sense if you authenticate using passwords. Replace GitHub passwords with passkeys (https://github.com/settings/security)!
-
 
 # Clean up
 
-- As before, stop the docker container and remove its image.
+The `GIT_DIR`, `GIT_CONFIG_GLOBAL`, and `GIT_CONFIG_SYSTEM` exports are scoped to your terminal session. Close the terminal or unset them to restore your normal git config:
+
+```
+unset GIT_DIR GIT_CONFIG_GLOBAL GIT_CONFIG_SYSTEM
+```
+
+Then remove the exercise files:
+
+```
+rm message{,.sig} id_ecdsa_sk_sign{,.pub} allowed_signers README
+rm -rf dotgit
+```
+
+If you also did the optional remote server section:
 
 ```
 docker stop ssh_demo
 docker rmi ssh-server
-
 ssh-keygen -R 'localhost'
-rm message{,.sig} id_ecdsa_sk_sign{,.pub} ./id_ecdsa_sk{,.pub} allowed_signers README sshconfig
-rm -rf dotgit
+rm id_ecdsa_sk{,.pub} sshconfig
 ```

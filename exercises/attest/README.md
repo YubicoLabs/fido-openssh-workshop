@@ -1,3 +1,5 @@
+Start this exercise in the `exercises/attest` directory.
+
 # FIDO device attestation: verify security key provenance
 
 In this exercise, we look at FIDO device attestation.
@@ -9,6 +11,8 @@ But in other cases, an entity that authenticates users or verifies signatures us
 This can for instance be used by a company's SSH CA, that only wants to sign SSH pubkeys for its users if there is proof that the corresponding private key is under protection of a security key.
 Or, it can be used by the owner of a Git repository, that only wants to merge pull requests if all commits are signed using a security key by a user they trust.
 
+Attestation is typically verified once at key enrollment time, not on every login or signing operation.
+
 # FIDO metadata
 
 Device attestation uses FIDO metadata to look up specific properties of a security key.
@@ -16,7 +20,19 @@ Every security key make and model is identified by an identifier called an AAGUI
 This identifier is not unique for the device (so cannot be used to identify a specific security key),
 but is specific to a vendor and model (typically up to its firmware version).
 
-- Use `fido2-token` to look up the AAGUID for your security key.
+- List your security key's device path:
+
+```
+fido2-token -L
+```
+
+- Use `fido2-token` to look up the AAGUID for your security key:
+
+```
+fido2-token -I <device>
+```
+
+Look for the `aaguid:` field in the output.
 
 Security key vendors can register metadata for their devices with the FIDO Alliance in the 
 [FIDO Metadata Service (MDS)](https://fidoalliance.org/metadata/).
@@ -41,7 +57,7 @@ The challenge must be saved in order to verify the attestation later.
 - Generate a new key pair with attestation using the challenge:
 
 ```
-ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk -O challenge=challenge.bin -O write-attestation=attestation.bin
+ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk -N '' -O challenge=challenge.bin -O write-attestation=attestation.bin
 ```
 
 The attestation is a signed statement generated on the security key using an attestation key.
@@ -66,9 +82,15 @@ This should generate a file `mds.jwt` with FIDO metadata.
 
 We are using a Python tool to verify the attestation against FIDO metadata.
 
-- To run this tool, first create a Python virtual environment - see the instructions here:
+- To run this tool, first set up a Python virtual environment (if you haven't already):
 
-[../../tools/README.md](../../tools/README.md)
+```
+cd ../../tools
+python3 -m venv venv
+source venv/bin/activate
+pip install requests fido2 PyYAML
+cd ../../exercises/attest
+```
 
 Note: before running the Python script, inspect its contents to get an idea of what it is doing.
 
@@ -78,7 +100,7 @@ Note: before running the Python script, inspect its contents to get an idea of w
 ../../tools/ssh-sk-attest.py --key id_ecdsa_sk.pub --attestation attestation.bin --challenge challenge.bin --mds mds.jwt
 ```
 
-the tool does the following:
+The tool does the following:
 
 - parse the attestation generated on the security key
 - verify the attestation signature
@@ -95,5 +117,5 @@ If all checks pass, the security key AAGUID and description are printed without 
 
 Delete the challenge, attestation, FIDO metadata and key files:
 ```
-rm ./challenge.bin ./attestation.bin ./mds.jwt ./id_ecdsa_sk{,.pub}
+rm id_ecdsa_sk{,.pub} challenge.bin attestation.bin mds.jwt
 ```
