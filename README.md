@@ -58,7 +58,7 @@ To save time downloading tools during the workshop, participants should have the
 
 ### Python virtual environment
 
-To run the Python scripts in this repository, it is recommended to use a virtual environment:
+To run the Python scripts in this repository, it is recommended to use a virtual environment. Run the following from the `tools` directory:
 ```sh
 	python3 -m venv venv
 	source venv/bin/activate

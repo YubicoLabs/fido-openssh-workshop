@@ -6,6 +6,8 @@ Run all commands in this exercise from the `exercises/keys` directory.
 
 > **Tip:** Copy your device path from this output. You will use it for every `fido2-token` command in this exercise.
 
+> **macOS note:** The device path shown by `fido2-token -L` on macOS looks like `ioreg:n`. Use it without the trailing colon in subsequent commands (e.g. `ioreg:n` not `ioreg:n:`).
+
 - Use `fido2-token -I <device>` to get information on your security key
 
   - Check `options:` to see if a PIN is set (`clientPin`) or not (`noclientPin`)
@@ -37,6 +39,8 @@ The `credProtect` extension is required by OpenSSH if you want to enforce user v
 ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk -N ''
 ```
 
+> **macOS note:** If this fails with "no FIDO security provider", you are using the system OpenSSH instead of the Homebrew version. Run `brew install openssh` and follow the instructions in the main [README](../../README.md) to update your PATH.
+
 This `ssh-keygen` command would work from any directory, and the `-f` flag saves the files relative to wherever you currently are. For this exercise, keep running commands from `exercises/keys` so the later relative paths continue to work. Regular SSH keys normally go in `~/.ssh/`, but with FIDO keys it doesn't matter because the private key is on the security key, not in the file.
 
 Note that a passphrase is not used here. The private key is stored on the security key, not in the private key file, so there is nothing that needs encryption.
@@ -45,6 +49,18 @@ can sign in on any server that trusts the public key.
 We will see [later](#user-verification) that there is a better way to prevent this from happening.
 
 - Using your Python virtual environment, run the script in the `tools` directory to inspect the private key file:
+
+If you haven't set up the Python virtual environment yet:
+
+```sh
+cd ../../tools
+python3 -m venv venv
+source venv/bin/activate
+pip install requests fido2 PyYAML
+cd ../../exercises/keys
+```
+
+Then run the script:
 
 ```sh
 ../../tools/openssh-key-v1.py ./id_ecdsa_sk
@@ -56,7 +72,7 @@ Notice that the private key file only contains a handle to the private key gener
 ```sh
 docker build --build-arg user=ubuntu -t ssh-server .
 ```
-The Dockerfile uses Ubuntu as a base image, installs OpenSSH, disables password authentication, copies the user's public key into their `.ssh/authorized_keys` file and starts the SSH server.
+The Dockerfile uses Ubuntu as a base image, installs OpenSSH, disables password authentication, copies the user's public key into their `.ssh/authorized_keys` file and starts the SSH server. This means you need to rebuild the image every time you generate a new key, since the public key is baked in at build time.
 
 - Run the docker container:
 
@@ -73,6 +89,8 @@ ssh -i ./id_ecdsa_sk ubuntu@localhost
 ```
 
 Your security key will flash. Touch it to confirm user presence and complete the sign-in.
+
+The first time you connect, SSH will ask you to confirm the server's fingerprint. Type `yes` to continue. SSH remembers this server in your `known_hosts` file so it won't ask again on subsequent connections.
 
 The server will allow you to sign in using your hardware-backed SSH key,
 because the corresponding public key was copied into the user's `~/.ssh/authorized_keys` file
@@ -135,6 +153,8 @@ If you are prompted that a resident key already exists, you can overwrite it. If
 - Use `fido2-token -L -r <device>` to see if your new key is stored on your security key.
 
 The columns represent an index, the SHA256 hash of your RP ID, and the RP ID itself, which defaults to `ssh:`
+
+Note: your new SSH key should appear under the `ssh:` RP ID. You may also see other entries from FIDO credentials registered on websites.
 
 - Rebuild your server and verify you can still sign in:
 
@@ -206,6 +226,8 @@ ssh-keygen -K
 ```
 
 Note that all files have been regenerated, but to prevent files from overwriting one another, the file names follow a naming convention that includes the options used to create them. Use the filenames from the output for subsequent commands.
+
+Note: `ssh-keygen -K` exports all resident keys from your security key, not just the ones created in this exercise. You can ignore any extra files that don't belong to this workshop.
 
 - Verify that you can still authenticate to GitHub using the regenerated key files:
 
