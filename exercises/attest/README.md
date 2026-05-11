@@ -88,8 +88,8 @@ We are using a Python tool to verify the attestation against FIDO metadata.
 cd ../../tools
 python3 -m venv venv
 source venv/bin/activate
-pip install requests fido2 PyYAML
-cd ../../exercises/attest
+pip install fido2 requests PyYAML
+cd ../exercises/attest
 ```
 
 Note: before running the Python script, inspect its contents to get an idea of what it is doing.

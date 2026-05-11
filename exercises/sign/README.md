@@ -39,7 +39,7 @@ ssh-keygen -Y verify -f ./allowed_signers -I johndoe@example.org -n test -s mess
 
 SSH signatures can also be used with Git: Both commits and tags can be signed.
 
-- Instead of using `.git`, use a separate git directory to prevent conflicts with this script's own git repository.
+- Instead of using `.git`, use a separate git directory to prevent conflicts with the workshop repository.
 
 ```
 export GIT_DIR=dotgit
@@ -85,7 +85,7 @@ git add README
 - Commit:
 
 ```
-git commit -m 'unsigned commit' README
+git commit -m 'unsigned commit'
 ```
 
 - Check the commit log:
@@ -179,7 +179,7 @@ If you have time, you can also push your signed commits to a local SSH server us
 
 Generate a separate authentication key (best practice: don't reuse your signing key for auth):
 ```
-ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk -C 'authentication key'
+ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk -C 'authentication key' -N ''
 ```
 
 Build and run the SSH server:
@@ -219,13 +219,30 @@ export GIT_SSH_COMMAND="ssh -F ./sshconfig"
 git push --set-upstream origin main
 ```
 
+- Verify that your signed commits made it to the server by exec-ing into the container:
+
+```
+docker exec -it -u ubuntu ssh_demo bash
+cd ~/scratch.git
+git log --oneline --show-signature
+```
+
+Note that the signatures will show as unverified because the server doesn't have an `allowedSignersFile` configured. To confirm the signature data is actually there, inspect the raw commit object:
+
+```
+git cat-file -p HEAD
+```
+
+You should see a `gpgsig` block containing the SSH signature. This shows that signatures are embedded in the commits themselves and travel with them when pushed to a remote.
+
+Type `exit` to leave the container.
 
 # Clean up
 
 The `GIT_DIR`, `GIT_CONFIG_GLOBAL`, and `GIT_CONFIG_SYSTEM` exports are scoped to your terminal session. Close the terminal or unset them to restore your normal git config:
 
 ```
-unset GIT_DIR GIT_CONFIG_GLOBAL GIT_CONFIG_SYSTEM
+unset GIT_DIR GIT_CONFIG_GLOBAL GIT_CONFIG_SYSTEM GIT_SSH_COMMAND
 ```
 
 Then remove the exercise files:

@@ -6,7 +6,7 @@ Run all commands in this exercise from the `exercises/keys` directory.
 
 > **Tip:** Copy your device path from this output. You will use it for every `fido2-token` command in this exercise.
 
-> **macOS note:** The device path shown by `fido2-token -L` on macOS looks like `ioreg:n`. Use it without the trailing colon in subsequent commands (e.g. `ioreg:n` not `ioreg:n:`).
+> **macOS note:** The device path shown by `fido2-token -L` on macOS looks like `ioreg:n:`. Use it without the trailing colon in subsequent commands (e.g. `ioreg:n` not `ioreg:n:`).
 
 - Use `fido2-token -I <device>` to get information on your security key
 
@@ -39,7 +39,12 @@ The `credProtect` extension is required by OpenSSH if you want to enforce user v
 ssh-keygen -t ecdsa-sk -f ./id_ecdsa_sk -N ''
 ```
 
-> **macOS note:** If this fails with "no FIDO security provider", you are using the system OpenSSH instead of the Homebrew version. Run `brew install openssh` and follow the instructions in the main [README](../../README.md) to update your PATH.
+> **macOS note:** If this fails with "no FIDO security provider", install Homebrew OpenSSH with `brew install openssh`, then run `which ssh-keygen` to confirm it points to the Homebrew version. If it still shows `/usr/bin/ssh-keygen`, update your PATH:
+>
+> ```sh
+> echo 'export PATH="$(brew --prefix)/bin:$PATH"' >> ~/.zshrc
+> source ~/.zshrc
+> ```
 
 This `ssh-keygen` command would work from any directory, and the `-f` flag saves the files relative to wherever you currently are. For this exercise, keep running commands from `exercises/keys` so the later relative paths continue to work. Regular SSH keys normally go in `~/.ssh/`, but with FIDO keys it doesn't matter because the private key is on the security key, not in the file.
 
@@ -56,8 +61,8 @@ If you haven't set up the Python virtual environment yet:
 cd ../../tools
 python3 -m venv venv
 source venv/bin/activate
-pip install requests fido2 PyYAML
-cd ../../exercises/keys
+pip install fido2 requests PyYAML
+cd ../exercises/keys
 ```
 
 Then run the script:
