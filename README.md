@@ -27,10 +27,10 @@ Participants should bring a laptop (Linux or macOS is recommended) and a securit
 ## Workshop preparation
 
 For the exercises, you should of course have the OpenSSH client installed. Version 8.2 is a minimum, but 8.9 or later is preferred.
-Linux distributions will have OpenSSH installed by default. 
+Linux distributions will have OpenSSH installed by default.
 macOS also has a version pre-installed, but it lacks a required FIDO SecurityKeyProvider. Instead, install from [brew](https://brew.sh/).
 
-Other software that is probably already installed: 
+Other software that is probably already installed:
 
 - Git version 2.34 or newer. Check with `git --version`
 - OpenSSL. Any version will do.
