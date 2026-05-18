@@ -1,5 +1,6 @@
 Run all commands in this exercise from the `exercises/keys` directory.
 
+# DENNIS
 # Getting to know your security key
 
 - Insert your security key and use `fido2-token -L` to list its device file (e.g. `/dev/hidraw0` on Linux or `ioreg:n` on macOS)
